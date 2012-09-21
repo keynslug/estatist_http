@@ -51,9 +51,7 @@ init(Options) ->
                        {[], estatist_http_handlers, {}}
                       ]}
                ],
-    Transport = cowboy_tcp_transport,
-    Proto = cowboy_http_protocol,
-    {ok, _Pid} = cowboy:start_listener(?MODULE, 8, Transport, TransportOptions, Proto, [{dispatch, Dispatch}]),
+    {ok, _Pid} = cowboy:start_http(?MODULE, 8, TransportOptions, [{dispatch, Dispatch}]),
     {ok, undefined}.
 
 handle_call(_Msg, _From, State) ->

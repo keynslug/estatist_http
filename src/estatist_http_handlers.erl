@@ -22,7 +22,7 @@ init({_Any, http}, Request, Options) ->
     %% ?LOG_DEBUG("New ~p request on ~p was received from ~s", [Method, RawPath, drimmi_ecore_utils:peername(Peer)]),
     {ok, Request, {Options, Peer, Method}}.
 
-handle(Request, {_Options, _Peer, 'GET'}) ->
+handle(Request, {_Options, _Peer, <<"GET">>}) ->
     {ok, Reply} =
         try
             Query = [ 
@@ -42,8 +42,8 @@ handle(Request, {_Options, _Peer, 'GET'}) ->
                     %io:format("~p~n", [MetricsValues]),
                     ProparedForJson = encode_response(MetricsValues),
                     %io:format("~p~n", [ProparedForJson]),
-                    {ok, Json} = json:encode(ProparedForJson),
-                    cowboy_http_req:reply(200, [{'Content-Type', "application/json"}], Json, Request);
+                    Json = jiffy:encode(ProparedForJson),
+                    cowboy_req:reply(200, [{<<"Content-Type">>, "application/json"}], Json, Request);
                 {error, Err} ->
                     Resp = 
                         case Err of
@@ -79,7 +79,7 @@ reply(Code, Request) ->
     reply(Code, "", Request).
 
 reply(Code, Data, Request) ->
-    cowboy_http_req:reply(Code, [{'Content-Type', "text/html"}], [erlang:integer_to_list(Code) ++ " " ++ reply_data(Code), "<br/>", Data], Request).
+    cowboy_req:reply(Code, [{<<"Content-Type">>, "text/html"}], [erlang:integer_to_list(Code) ++ " " ++ reply_data(Code), "<br/>", Data], Request).
 
 
 reply_data(200) -> <<"Ok">>;
@@ -91,7 +91,7 @@ reply_data(Code) -> erlang:list_to_binary("Error: " ++ erlang:integer_to_list(Co
 
 
 examine_request(Request, What) ->
-    [ begin {Value, _} = cowboy_http_req:Ask(Request), Value end || Ask <- What ].
+    [ begin {Value, _} = cowboy_req:Ask(Request), Value end || Ask <- What ].
 
 
 
@@ -131,7 +131,7 @@ make_field_atom(Field) ->
     end.
 
 get_qs_value(Key, Default, ReqData) ->
-    case cowboy_http_req:qs_val(Key, ReqData, undefined) of
+    case cowboy_req:qs_val(Key, ReqData, undefined) of
         {undefined, _} ->
             Default;
         {Value, _} ->
