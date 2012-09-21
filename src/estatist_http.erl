@@ -10,7 +10,7 @@
 
 start() ->
     application:load(?MODULE),
-    ensure_deps_started(),
+    ensure_deps_started(?MODULE),
     application:start(?MODULE).
 
 stop() ->
@@ -21,10 +21,13 @@ ensure_started(App) ->
         ok ->
             ok;
         {error, {already_started, App}} ->
-            ok
+            ok;
+        {error, _} ->
+            ensure_deps_started(App),
+            ensure_started(App)
     end.
 
-ensure_deps_started() ->
-    {ok, DepsList} = application:get_key(?MODULE, applications),
-    [ensure_started(App) || App <-DepsList],
+ensure_deps_started(AppName) ->
+    {ok, DepsList} = application:get_key(AppName, applications),
+    [ensure_started(App) || App <- DepsList],
     ok.
