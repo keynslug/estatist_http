@@ -48,7 +48,7 @@ init(Options) ->
 
     Dispatch = [
                 {'_', [
-                       {[], estatist_http_handlers, {}}
+                       {['...'], estatist_http_handlers, {}}
                       ]}
                ],
     {ok, _Pid} = cowboy:start_http(?MODULE, 8, TransportOptions, [{dispatch, Dispatch}]),
