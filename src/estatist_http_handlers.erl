@@ -70,7 +70,7 @@ examine_request(Request, What) ->
     [ begin {Value, _} = cowboy_req:Ask(Request), Value end || Ask <- What ].
 
 
-encode_response(List = [{_, _} | _]) when is_list(List) ->
+encode_response(List) when is_list(List) ->
     {[encode_response(E) || E <- List]};
 encode_response({Name, Obj}) ->
     {encode_name(Name), encode_response(Obj)};
