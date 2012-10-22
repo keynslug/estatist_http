@@ -97,6 +97,9 @@ expand(N, Value, []) ->
 param(undefined, Default) ->
     Default;
 
+param(<<"*">>, Default) ->
+    Default;
+
 param(Field, _Default) ->
     case [make_field_atom(Value) || Value <- tokens(Field)] of
         [V] ->
@@ -106,9 +109,9 @@ param(Field, _Default) ->
     end.
 
 tokens(Data) ->
-    string:tokens(binary_to_list(Data), ",").
+    binary:split(Data, <<",">>, [global]).
 
 make_field_atom(Field) ->
-    try list_to_existing_atom(Field)
+    try binary_to_existing_atom(Field, utf8)
     catch error:badarg -> throw({bad_request, {unknown_atom, Field}})
     end.
