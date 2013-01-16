@@ -51,7 +51,7 @@ init(Options) ->
                        {['...'], estatist_http_handlers, {}}
                       ]}
                ],
-    {ok, _Pid} = cowboy:start_http(?MODULE, 8, TransportOptions, [{dispatch, Dispatch}]),
+    {ok, _Pid} = cowboy:start_http(?MODULE, 8, TransportOptions, [{env, [{dispatch, Dispatch}]}]),
     {ok, undefined}.
 
 handle_call(_Msg, _From, State) ->
