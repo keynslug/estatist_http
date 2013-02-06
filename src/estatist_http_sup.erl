@@ -26,5 +26,5 @@ start_link() ->
 
 init([]) ->
     Config = application:get_all_env(),
-    {ok, { {one_for_one, 5, 10}, [?CHILD(estatist_http_srv, [Config])]} }.
+    {ok, { {one_for_one, 5, 10}, [estatist_http_srv:init(Config)]} }.
 

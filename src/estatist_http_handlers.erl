@@ -17,7 +17,7 @@
 -export([
          init/3,
          handle/2,
-         terminate/2
+         terminate/3
         ]).
 
 init({_Any, http}, Request, _Options) ->
@@ -27,7 +27,7 @@ init({_Any, http}, Request, _Options) ->
 handle(Request, {<<"GET">>, List}) ->
     {ok, Reply} = try
         [Names, Types, Params, RowID] = expand(4, undefined, List),
-        Query = [ 
+        Query = [
                     {names,   param(Names, all)},
                     {types,   param(Types, all)},
                     {params,  param(Params, all)}
@@ -47,7 +47,7 @@ handle(Request, {<<"GET">>, List}) ->
                 throw(Err)
         end
     catch
-        throw:Error -> 
+        throw:Error ->
             error_logger:error_report(["Metrics selection failed", {reason, Error}]),
             reply(400, Request)
     end,
@@ -58,7 +58,7 @@ handle(Request, _) ->
     {ok, Reply, undefined}.
 
 
-terminate(_Request, _State) ->
+terminate(_Reason, _Request, _State) ->
     ok.
 
 
